@@ -8,8 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "engines": {
-    "node": "12.16.1",
-    "npm": "6.14.2"
+    "node": "12.16.1"
   },
   "repository": {
     "type": "git",
@@ -22,6 +21,7 @@
   },
   "homepage": "https://github.com/prav10194/botkit-facebook-wrapper#readme",
   "dependencies": {
+    "botbuilder-adapter-facebook": "^1.0.9",
     "botkit": "^0.6.7",
     "dotenv": "^4.0.0",
     "express": "^4.16.2"
