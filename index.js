@@ -26,7 +26,7 @@ var facebookController = botkit.facebookbot({
 
 var facebookBot = facebookController.spawn({});
 
-facebookController.setupWebserver("5000",function(err,webserver) {
+facebookController.setupWebserver("3000",function(err,webserver) {
   facebookController.createWebhookEndpoints(facebookController.webserver, facebookBot, function() {
       console.log('Your facebook bot is connected.');
   });
