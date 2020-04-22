@@ -9,71 +9,38 @@ var http = require('http').Server(app);
 
 
 
-const { FacebookAdapter } = require('botbuilder-adapter-facebook');
-const restify = require('restify');
- 
-const adapter = new FacebookAdapter({
-     verify_token: process.env.FB_VERIFY_TOKEN,
-     app_secret: process.env.FB_APP_SECRET,
-     access_token: process.env.FB_ACCESS_TOKEN
+
+
+
+
+
+require('dotenv').config()
+
+// You need it to get the body attribute in the request object.
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+  extended: true
+}))
+
+
+var botkit = require('botkit');
+
+var facebookController = botkit.facebookbot({
+  verify_token: process.env.FB_VERIFY_TOKEN,
+  access_token: process.env.FB_ACCESS_TOKEN
 });
-const server = restify.createServer();
-server.use(restify.plugins.bodyParser());
-server.use(restify.plugins.queryParser());
- 
-server.get('/api/messages', (req, res) => {
-     if (req.query['hub.mode'] === 'subscribe') {
-          if (req.query['hub.verify_token'] === process.env.FACEBOOK_VERIFY_TOKEN) {
-               const val = req.query['hub.challenge'];
-               res.sendRaw(200, val);
-          } else {
-               console.log('failed to verify endpoint');
-               res.send('OK');
-          }
-     }
+
+var facebookBot = facebookController.spawn({});
+
+facebookController.setupWebserver("3000",function(err,webserver) {
+  facebookController.createWebhookEndpoints(facebookController.webserver, facebookBot, function() {
+      console.log('Your facebook bot is connected.');
+  });
 });
- 
-server.post('/api/messages', (req, res) => {
-     adapter.processActivity(req, res, async(context) => {
-         await context.sendActivity('I heard a message!');
-     });
+
+facebookController.hears(['.*'], 'message_received', function(bot, message){
+  facebookBot.reply(message, 'You wrote -  '+message.text);
 });
- 
-server.listen(process.env.port || process.env.PORT || 5000, () => {
-     console.log(`\n${ server.name } listening to ${ server.url }`);
- });
-
-
-
-
-
-// require('dotenv').config()
-
-// // You need it to get the body attribute in the request object.
-// app.use(bodyParser.json());
-// app.use(bodyParser.urlencoded({
-//   extended: true
-// }))
-
-
-// var botkit = require('botkit');
-
-// var facebookController = botkit.facebookbot({
-//   verify_token: process.env.FB_VERIFY_TOKEN,
-//   access_token: process.env.FB_ACCESS_TOKEN
-// });
-
-// var facebookBot = facebookController.spawn({});
-
-// facebookController.setupWebserver("3000",function(err,webserver) {
-//   facebookController.createWebhookEndpoints(facebookController.webserver, facebookBot, function() {
-//       console.log('Your facebook bot is connected.');
-//   });
-// });
-
-// facebookController.hears(['.*'], 'message_received', function(bot, message){
-//   facebookBot.reply(message, 'You wrote -  '+message.text);
-// });
 
 
     // ทดสอบข้อคำถามงานทะเบียน-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
